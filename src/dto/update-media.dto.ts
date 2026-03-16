@@ -17,4 +17,10 @@ export class UpdateMediaDto {
   @ApiPropertyOptional()
   text?: string;
 
+  @ApiPropertyOptional()
+  public_id?: string;
+
+  @ApiPropertyOptional()
+  resource_type?: string;
+
 }

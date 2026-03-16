@@ -15,4 +15,7 @@ export class CreateMediaDto {
 
   @ApiProperty({ required: false })
   text?: string;
+
+  @ApiProperty({ required: false })
+  public_id?: string;
 }

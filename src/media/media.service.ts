@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Media } from 'src/entity/media.entity';
 import { CreateMediaDto } from 'src/dto/create-media.dto';
+import cloudinary from 'src/upload/cloudinary.provider';
 
 @Injectable()
 export class MediaService {
@@ -74,6 +75,13 @@ export class MediaService {
       if (!media) {
         throw new NotFoundException(`Media with id ${id} not found`);
       }
+      if (dto.public_id && media.public_id && media.public_id !== dto.public_id) {
+
+        await cloudinary.uploader.destroy(media.public_id, {
+          resource_type: media.resource_type || 'image'
+        });
+
+      }
 
       await this.repo.update(id, dto);
 
@@ -84,8 +92,57 @@ export class MediaService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async replaceMediaFile(id: number, file: Express.Multer.File) {
+
+  const media = await this.repo.findOne({
+    where: { id }
+  });
+
+  if (!media) {
+    throw new NotFoundException(`Media with id ${id} not found`);
+  }
+
+  // 1️⃣ Delete old asset
+  if (media.public_id) {
+
+    await cloudinary.uploader.destroy(media.public_id, {
+      resource_type: media.resource_type || 'image'
+    });
 
   }
+
+  // 2️⃣ Upload new asset
+  const uploadResult: any = await new Promise((resolve, reject) => {
+
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'portfolio',
+        resource_type: 'auto'
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+
+    stream.end(file.buffer);
+
+  });
+
+  // 3️⃣ Update DB
+  await this.repo.update(id, {
+    url: uploadResult.secure_url,
+    public_id: uploadResult.public_id,
+    resource_type: uploadResult.resource_type
+  });
+
+  return this.repo.findOne({
+    where: { id }
+  });
+
+}
 
   async delete(id: number) {
 

@@ -19,4 +19,10 @@ export class Media {
 
   @Column({ nullable: true })
   text: string;
+
+  @Column({ nullable: true })
+  public_id: string;
+  
+  @Column({ nullable: true })
+  resource_type: string;
 }

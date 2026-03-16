@@ -32,26 +32,30 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async upload(@UploadedFile() file: Express.Multer.File) {
 
-  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
-    const upload = cloudinary.uploader.upload_stream(
-      { folder: 'portfolio' },
-      (error, result) => {
+      const upload = cloudinary.uploader.upload_stream(
+        {
+          folder: 'portfolio',
+          resource_type: 'auto'
+        },
+        (error, result) => {
 
-        if (error) return reject(error);
+          if (error) return reject(error);
 
-        resolve({
-          url: result!.secure_url,
-          public_id: result!.public_id
-        });
+          resolve({
+            url: result!.secure_url,
+            public_id: result!.public_id,
+            resource_type: result!.resource_type
+          });
 
-      },
-    );
+        },
+      );
 
-    upload.end(file.buffer);
+      upload.end(file.buffer);
 
-  });
+    });
 
-}
+  }
 
 }
