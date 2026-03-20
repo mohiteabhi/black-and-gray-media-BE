@@ -8,6 +8,7 @@ import { PagesModule } from './pages/pages.module';
 import { UploadModule } from './upload/upload.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { GalleryModule } from './gallery/gallery.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuthModule } from './auth/auth.module';
     SectionsModule,
     UploadModule,
     AuthModule,
+    GalleryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
