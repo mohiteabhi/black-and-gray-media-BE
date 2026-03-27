@@ -17,13 +17,16 @@ import { GalleryModule } from './gallery/gallery.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'portfolio_cms',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT || '3306'),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: false, // DB already exists
+      ssl: {
+        rejectUnauthorized: true,
+      },
     }),
     MediaModule,
     PagesModule,
@@ -35,4 +38,4 @@ import { GalleryModule } from './gallery/gallery.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
